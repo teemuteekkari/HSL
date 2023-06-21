@@ -14,9 +14,8 @@ import { VehicleComponent } from './vehicle/vehicle.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    VehicleService,
   ],
-  providers: [],
+  providers: [VehicleService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

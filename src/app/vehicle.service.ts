@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { connect, MqttClient } from 'mqtt';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -9,12 +10,13 @@ export class VehicleService {
 
   constructor() {}
 
-  connect() {
+  connect() :  MqttClient {
     const options = {
-      hostname: 'mqtt.hsl.fi',
-      port: 1883,
-      username: 'your-username',
-      password: 'your-password',
+      clientId: environment.mqtt.clientId,
+      hostname: environment.mqtt.server,
+      port: environment.mqtt.port,
+      protocolId: 'mqtts',
+      protocol: 'mqtts' as 'mqtts',
     };
 
     this.client = connect(options);
@@ -23,10 +25,15 @@ export class VehicleService {
       console.log('Connected to MQTT broker');
       this.subscribeToVehicleMovements();
     });
+    this.client.on('error', (error) => {
+      console.error('MQTT error:', error);
+    });
+    return this.client;
   }
 
   private subscribeToVehicleMovements() {
-    const topic = 'vehicle/movements';
+    // A situational overview
+    const topic = '/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#';
 
     if (this.client) {
       this.client.subscribe(topic, (err) => {
@@ -37,7 +44,7 @@ export class VehicleService {
 
       this.client.on('message', (topic, message) => {
         const payload = message.toString();
-        // Process the received payload data here
+        //TODO: Process the received payload data here
         console.log(payload);
       });
     }
